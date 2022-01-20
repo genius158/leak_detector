@@ -76,8 +76,9 @@ _dataInstance(expando data instance)
 GC
 ```
  Future<void> gc() async {
-   String _collectAllGarbageMethodName = '_collectAllGarbage';
-   await _vmService.callMethod(_collectAllGarbageMethodName, isolateId: _mainIsolateID);
+   // String _collectAllGarbageMethodName = '_collectAllGarbage';
+   // await _vmService.callMethod(_collectAllGarbageMethodName, isolateId: _mainIsolateID);
+   await _vmService.getAllocationProfile(isolate.id!, gc: true);
  }
 
 ```
