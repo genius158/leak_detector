@@ -7,9 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:vm_service/vm_service.dart';
 
-import 'leak_detector.dart';
 import 'leak_analyzer.dart';
 import 'leak_data.dart';
+import 'leak_detector.dart';
 import 'vm_service_utils.dart';
 
 ///check leak task
@@ -108,7 +108,9 @@ class DetectorTask extends _Task {
 
   ///List Item has id
   Future<List<dynamic>> _getExpandoWeakPropertyList(Expando expando) async {
-    if (await VmServerUtils().hasVmService) {
+    bool hasVm = await VmServerUtils().hasVmService;
+    print("_getExpandoWeakPropertyList  $hasVm");
+    if (hasVm) {
       final data = (await VmServerUtils().getInstanceByObject(expando))
           ?.getFieldValueInstance('_data');
       if (data?.id != null) {
@@ -116,6 +118,8 @@ class DetectorTask extends _Task {
         if (dataObj?.json != null) {
           Instance? weakListInstance = Instance.parse(dataObj!.json!);
           if (weakListInstance != null) {
+            print("_getExpandoWeakPropertyList weakListInstance.elements  ${weakListInstance.elements}");
+
             return weakListInstance.elements ?? [];
           }
         }

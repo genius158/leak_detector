@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:leak_detector/leak_detector.dart';
 
@@ -165,6 +167,8 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+Stream streamController = StreamController().stream.asBroadcastStream();
+
 class LeakPage1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -180,7 +184,16 @@ class LeakPage1 extends StatelessWidget {
                 (states) => BorderSide(width: 1, color: Colors.blue),
               ),
             ),
-            child: Text('back'),
+            child: StreamBuilder(
+              stream: streamController,
+              initialData: "",
+              builder: (_, data) {
+                streamController.listen((event) {
+                  print("streamController  $data");
+                });
+                return Text('back');
+              },
+            ),
           ),
         ),
       ),

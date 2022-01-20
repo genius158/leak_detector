@@ -4,9 +4,9 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:vm_service/utils.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
-import 'package:vm_service/utils.dart';
 
 const String _findLibrary = 'package:leak_detector/src/vm_service_utils.dart';
 
@@ -115,8 +115,11 @@ class VmServerUtils {
     if (mainIsolate == null || mainIsolate.id == null) return null;
     Response keyResponse =
         await vms.invoke(mainIsolate.id!, library.id!, 'generateNewKey', []);
+    print("keyResponse.json  ${keyResponse.json}");
     final keyRef = InstanceRef.parse(keyResponse.json);
     String? key = keyRef?.valueAsString;
+    print("keyResponse.json  key  ${key}");
+    print("keyResponse.json  keyRef!.id!  ${keyRef?.id}");
     if (key == null) return null;
     _objCache[key] = obj;
 
@@ -124,6 +127,8 @@ class VmServerUtils {
       Response valueResponse = await vms
           .invoke(mainIsolate.id!, library.id!, "keyToObj", [keyRef!.id!]);
       final valueRef = InstanceRef.parse(valueResponse.json);
+      print("keyResponse.json  valueResponse  ${valueResponse}");
+      print("keyResponse.json  valueRef?.id  ${valueRef?.id}");
       return valueRef?.id;
     } catch (e) {
       print('getObjectId $e');
