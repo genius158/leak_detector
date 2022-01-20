@@ -113,19 +113,21 @@ class VmServerUtils {
     if (vms == null) return null;
     final mainIsolate = await findMainIsolate();
     if (mainIsolate == null || mainIsolate.id == null) return null;
-    Response keyResponse =
-        await vms.invoke(mainIsolate.id!, library.id!, 'generateNewKey', []);
-    print("keyResponse.json  ${keyResponse.json}");
-    final keyRef = InstanceRef.parse(keyResponse.json);
-    String? key = keyRef?.valueAsString;
+    InstanceRef keyResponse =
+        await vms.invoke(mainIsolate.id!, library.id!, 'generateNewKey', []) as InstanceRef;
+    print("keyResponse.json  ${keyResponse.type}");
+    final keyRef = keyResponse;
+    String? key = keyRef.valueAsString;
     print("keyResponse.json  key  ${key}");
-    print("keyResponse.json  keyRef!.id!  ${keyRef?.id}");
+    print("keyResponse.json  keyRef!.id!  ${keyRef.id}");
+    print("keyResponse.json  keyRef!.id!  ${keyRef.toJson()}");
+    print("keyResponse.json  keyRef!.id!  ${InstanceRef.parse(keyResponse.json)?.id}");
     if (key == null) return null;
     _objCache[key] = obj;
 
     try {
       Response valueResponse = await vms
-          .invoke(mainIsolate.id!, library.id!, "keyToObj", [keyRef!.id!]);
+          .invoke(mainIsolate.id!, library.id!, "keyToObj", [keyRef.id!]);
 
       final valueRef = valueResponse as InstanceRef;
       print("keyResponse.json  valueResponse  $valueRef");
@@ -156,8 +158,14 @@ class VmServerUtils {
       try {
         Response valueResponse =
             await vms.invoke(mainIsolate.id!, targetId, method, argumentIds);
-        final valueRef = InstanceRef.parse(valueResponse.json);
-        return valueRef?.valueAsString;
+        final valueRef1 = InstanceRef.parse(valueResponse.json);
+        var refStr1 = valueRef1?.valueAsString;
+        final valueRef2 = Instance.parse(valueResponse.json);
+        var refStr2 = valueRef2?.valueAsString;
+
+        print("refStr1: $refStr1  refStr2: $refStr2   ${refStr2 == refStr1}");
+
+        return refStr1;
       } catch (e) {}
     }
     return null;
