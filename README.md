@@ -56,8 +56,8 @@ _expandoInstance
  ) as InstanceRef;
  // 这里的 id 就是 obj 对应的 id
  String? objectId = valueRef.id;
- var value = await _vmService.getObject(_mainIsolateID, objectId!);
- _expandoInstance value as Instance?;
+ var jsonData = await _vmService.getObject(_mainIsolateID, objectId!).json;
+ _expandoInstance = Instance.parse(jsonData);
 ```
 _dataInstance(expando data instance)
 ```
@@ -70,7 +70,8 @@ _dataInstance(expando data instance)
  }
 
  InstanceRef instanceRef = _dataField.value;
- Instance? _dataInstance = await _vmService.getObject(_mainIsolateID, instanceRef.id!) as Instance?;
+ var jsonData = await _vmService.getObject(_mainIsolateID, instanceRef.id!).json;
+ _dataInstance = Instance.parse(jsonData);
 ```
 
 GC
@@ -89,7 +90,8 @@ check Leak
  List instanceRefs = _dataInstance.elements!;
  for (InstanceRef? instanceRef in instanceRefs) {
    if (instanceRef != null) {
-     var instance = await _vmService.getObject(_mainIsolateID, instanceRef.id) as Instance?;
+     var jsonData = await _vmService.getObject(_mainIsolateID, instanceRef.id!).json;
+     var instance = Instance.parse(jsonData);
      InstanceRef propertyValue = instance!.propertyValue!;
      if(propertyValue != null) {
       // leak check
