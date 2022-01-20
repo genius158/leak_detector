@@ -116,9 +116,10 @@ class DetectorTask extends _Task {
       if (data?.id != null) {
         final dataObj = await VmServerUtils().getObjectInstanceById(data.id);
         if (dataObj?.json != null) {
-          Instance? weakListInstance = Instance.parse(dataObj!.json!);
+          Instance? weakListInstance = Instance.parse(dataObj?.json);
           if (weakListInstance != null) {
-            print("_getExpandoWeakPropertyList weakListInstance.elements  ${weakListInstance.elements}");
+            print(
+                "_getExpandoWeakPropertyList weakListInstance.elements  ${weakListInstance.elements}");
 
             return weakListInstance.elements ?? [];
           }

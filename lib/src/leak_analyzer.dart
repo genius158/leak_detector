@@ -20,6 +20,8 @@ class LeakAnalyzer {
     if (leakedInstance?.id != null && maxRetainingPath != null) {
       final retainingPath = await VmServerUtils()
           .getRetainingPath(leakedInstance!.id!, maxRetainingPath);
+      print("retainingPath path $retainingPath ");
+
       if (retainingPath?.elements != null &&
           retainingPath!.elements!.isNotEmpty) {
         final retainingObjectList = retainingPath.elements!;

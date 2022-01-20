@@ -126,10 +126,18 @@ class VmServerUtils {
     try {
       Response valueResponse = await vms
           .invoke(mainIsolate.id!, library.id!, "keyToObj", [keyRef!.id!]);
-      final valueRef = InstanceRef.parse(valueResponse.json);
-      print("keyResponse.json  valueResponse  ${valueResponse}");
-      print("keyResponse.json  valueRef?.id  ${valueRef?.id}");
-      return valueRef?.id;
+
+      final valueRef = valueResponse as InstanceRef;
+      print("keyResponse.json  valueResponse  $valueRef");
+      print("keyResponse.json  valueRef?.classRef  ${valueRef.classRef}");
+      Obj clazz = await vms.getObject(mainIsolate.id!, valueRef.classRef!.id!);
+      print("keyResponse.json  valueRef?.classRef clazz  $clazz");
+      Obj valueObj = await vms.getObject(mainIsolate.id!, valueRef.id!);
+      Instance? instance = Instance.parse(valueObj.json);
+      print(
+          "keyResponse.json  valueRef?.classRef clazz instance?.elements  ${instance?.elements}");
+      print("keyResponse.json  valueRef?.id  ${valueRef.id}");
+      return valueRef.id;
     } catch (e) {
       print('getObjectId $e');
     } finally {
@@ -197,7 +205,8 @@ class VmServerUtils {
     if (vms == null) return null;
     final mainIsolate = await findMainIsolate();
     if (mainIsolate != null && mainIsolate.id != null) {
-      return vms.getRetainingPath(mainIsolate.id!, objId, limit);
+      var path = vms.getRetainingPath(mainIsolate.id!, objId, limit);
+      return path;
     }
     return null;
   }
